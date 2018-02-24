@@ -16,8 +16,19 @@
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
             socket.on('message', function (data) {
-                alert(JSON.stringify(data))
-                $('#chat').val($('#chat').val() + data.msg + '\n');
+                let info = "";
+                let msg = data.msg;
+                console.log(data)
+                if (data.meta) {
+                    data.meta.forEach(element => {
+                        info += element.name + ": " + element.value + " ";
+                        if (element.name == "safe" && element.value < 0.9) {
+                            msg = "<DANGER>"
+                        }
+                    });
+                }
+                $('#chat').val($('#chat').val() + msg + '\n');
+                $('#chat').val($('#chat').val() + "Stats: " + info + '\n');
                 $('#chat').scrollTop($('#chat')[0].scrollHeight);
             });
             $('#text').keypress(function (e) {
@@ -56,10 +67,13 @@
             xhttp.send(JSON.stringify(request));
 
             var response = JSON.parse(xhttp.responseText);
-            let output = response.outputs[0];
-            let concepts = output.data.concepts;
+            if (response.status.code == 10000) {
+                let output = response.outputs[0];
+                let concepts = output.data.concepts;
+                return concepts;
+            }
+            return [];
 
-            return concepts;
         }
 
         function leave_room() {
