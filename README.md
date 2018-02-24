@@ -1,4 +1,4 @@
-Awesome Chat
+Awesome Chat...
 ===================
 
 A relativeley simple chat application that demonstrates how to structure a Flask-SocketIO application.
