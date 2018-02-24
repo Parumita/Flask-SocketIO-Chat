@@ -27,13 +27,39 @@
 
                     let message = {
                         msg: text,
-                        meta: "test"
+                        meta: imageStats(text)
                     }
 
                     socket.emit('text', message);
                 }
             });
         });
+
+        function imageStats(url) {
+            var xhttp = new XMLHttpRequest();
+
+            let request = {
+                "inputs": [{
+                    "data": {
+                        "image": {
+                            "url": url
+                        }
+                    }
+                }]
+            };
+
+            // Clarifai URL API
+            xhttp.open("POST", "https://api.clarifai.com/v2/models/d16f390eb32cad478c7ae150069bd2c6/outputs", false);
+            xhttp.setRequestHeader("Content-type", "application/json");
+            xhttp.setRequestHeader("Authorization", "Key d722ad290d6a46619e0f38cf287fcd0a");
+            xhttp.send(JSON.stringify(request));
+
+            var response = JSON.parse(xhttp.responseText);
+            let output = response.outputs[0];
+            let concepts = output.data.concepts;
+
+            return concepts;
+        }
 
         function leave_room() {
             socket.emit('left', {}, function () {
